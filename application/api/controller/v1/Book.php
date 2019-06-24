@@ -17,6 +17,7 @@ class Book
     /**
      * 查询指定bid的图书
      * @param $bid
+     * @param('bid','图书ID','require|number')
      * @return mixed
      */
     public function getBook($bid)

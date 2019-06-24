@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=5.6.0",
-    "topthink/framework": "5.1.*",
+    "topthink/framework": "5.1.36",
     "topthink/think-migration": "2.*",
     "firebase/php-jwt": "^5.0",
     "lin-cms-tp5/base-core": "dev-master",

@@ -1,8 +1,23 @@
+<h1 align="center">
+  <a href="http://doc.cms.7yue.pro/">
+  <img src="http://doc.cms.7yue.pro/left-logo.png" width="250"/></a>
+  <br>
+  Lin-CMS-TP5
+</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-%3E%3D7.1-blue.svg" alt="php version" data-canonical-src="https://img.shields.io/badge/PHP-%3E%3D7.1-blue.svg" style="max-width:100%;"></a>
+  <a href="https://www.kancloud.cn/manual/thinkphp5_1/353946" rel="nofollow"><img src="https://img.shields.io/badge/ThinkPHP-5.1.*-green.svg" alt="ThinkPHP version" data-canonical-src="https://img.shields.io/badge/ThinkPHP-5.1.*-green.svg" style="max-width:100%;"></a>
+  <img src="https://img.shields.io/badge/license-license--2.0-lightgrey.svg" alt="LISENCE" data-canonical-src="https://img.shields.io/badge/license-license--2.0-lightgrey.svg" style="max-width:100%;"></a>
+</p>
+
 # 简介
 
 ## 预防针
 
 * 本项目非官方团队出品，仅出于学习、研究目的丰富下官方项目的语言支持。
+* 本项目采取后跟进官方团队功能的形式，即官方团队出什么功能，这边就跟进开发什么功能，开发者不必前端担心适配问题。
+* 在上一点的基础上，我们会尝试加入一些自己的想法并实现。
 * 局限于本人水平，有些地方还需重构，已经纳入了计划中，当然也会有我没考虑到的，希望有更多人参与进来一起完善，毕竟PHP作为世界上最好的语言不能缺席。
 
 ## 线上文档地址(完善中)
@@ -11,7 +26,7 @@
 
 ## 线上 Demo
 
-TP5版的暂无，可直接参考官方团队的线上Demo：[http://face.cms.7yue.pro/](http://face.cms.7yue.pro/)
+可直接参考官方团队的线上Demo：[http://face.cms.7yue.pro/](http://face.cms.7yue.pro/)
 
 ## 什么是 Lin CMS？
 
@@ -174,81 +189,24 @@ You can exit with `CTRL-C`
 
 打开浏览器，访问``http://127.0.0.1:8000``，你会看到一个欢迎界面，至此，Lin-cms-tp5部署完毕，可搭配[lin-cms-vue](https://github.com/TaleLin/lin-cms-vue)使用了。
 
-## 注释验证器模式
-
-> 参数说明见[注释验证器文档](https://github.com/china-wangyu/lin-cms-tp-validate-core)
-
-### `第1步` 需要在`composer.json`引入`lin-cms-tp/validate-core`扩展（默认配置）
-
-```json5
- // ....省略其它配置
- "require": {
-     // ....省略其它扩展配置
-    "lin-cms-tp/validate-core": "dev-master"
-  },
- 
-```
-
-### `第2步` 需要在命令行更新`composer.json`引入的`lin-cms-tp/validate-core`扩展
-
-```bash
-composer update
-```
-
-### `第3步:` 需要在中间件配置`config/middleware.php`中引入 `LinCmsTp\Param::class`（默认安装）
-
-```php
-return [
-    // 默认中间件命名空间
-    'default_namespace' => 'app\\http\\middleware\\',
-    'ReflexValidate' => LinCmsTp\Param::class  // 开启注释验证器，需要的中间件配置，请勿胡乱关闭
-];
-```
-
-### `第4步:` 需要在路由配置`route/route.php`中引入验证器中间件`ReflexValidate`
-
-```php
-use think\facade\Route;
-
-Route::group('', function () {
-   # .... 省略一大堆路由配置
-})->middleware(['Auth','ReflexValidate'])->allowCrossDomain();
-```
-
-### `第5步:` 需要在方法注释中新增验证器`@validate('验证模型名称')`
-
-> 本注释验证器模式有两种方式，如有不在`application\api\validate目录`的
-> 验证器,请使用全命名空间，
-
->例如：`@validate('\app\common\validate\验证模 型名称')`
-
-```php
-    /**
-     * 账户登陆
-     * @param Request $request
-     * @validate('LoginForm')
-     * @return array
-     * @throws \think\Exception
-     */
-    public function login(Request $request)
-    {
-        # (new LoginForm())->goCheck();  # 开启注释验证器以后，本行可以去掉，这里做更替说明
-        # 省略代码逻辑
-    }
-```
-
 ## 讨论交流
-微信公众号搜索：林间有风
-<br>
-<img class="QR-img" src="http://imglf6.nosdn0.126.net/img/YUdIR2E3ME5weEdlNThuRmI4TFh3UWhiNmladWVoaTlXUXpicEFPa1F6czFNYkdmcWRIbGRRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg" width="150" height="150" style='text-align:left;width: 100px;height: 100px'>
 
-QQ群搜索：Lin CMS 或 814597236
+### QQ 交流群
 
-<img src="https://consumerminiaclprd01.blob.core.chinacloudapi.cn/miniappbackground/sfgmember/lin/qqgroup.jpg" width="150" height="205" >
+QQ 群号：643205479
+
+<img class="QR-img" width="258" height="300" src="http://imglf3.nosdn0.126.net/img/Qk5LWkJVWkF3Nmdyc2xGcUtScEJLOVV1clErY1dJa0FsQ3E1aDZQWlZHZ2dCbSt4WXA1V3dRPT0.jpg?imageView&thumbnail=1680x0&quality=96&stripmeta=0&type=jpg">
+
+### 微信公众号
+
+微信搜索：林间有风
+
+<img class="QR-img" src="http://imglf6.nosdn0.126.net/img/YUdIR2E3ME5weEdlNThuRmI4TFh3UWhiNmladWVoaTlXUXpicEFPa1F6czFNYkdmcWRIbGRRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg">
 
 
 ## 下个版本开发计划
 
+- [ ] 常用异步任务封装
 - [ ] 注解路由
 - [x] 模型封装
 - [x] 注解验证器

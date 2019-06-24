@@ -1,8 +1,9 @@
 <?php
 
 use think\migration\Migrator;
+use think\migration\db\Column;
 
-class User extends Migrator
+class AddAvatar extends Migrator
 {
     /**
      * Change Method.
@@ -28,15 +29,8 @@ class User extends Migrator
     public function change()
     {
         $table = $this->table('lin_user', array('engine' => 'InnoDB'));
-        $table->addColumn('nickname', 'string', array('limit' => 24))
-            ->addColumn('password', 'string', array('limit' => 100))
-            ->addColumn('email', 'string', array('limit' => 100))
-            ->addColumn('admin', 'integer', array('limit' => 6, 'default' => 1, 'comment' => '是否为超级管理员 ; 1 -> 普通用户 | 2 -> 超级管理员'))
-            ->addColumn('active', 'integer', array('limit' => 6, 'default' => 1))
-            ->addColumn('group_id', 'integer', array('limit' => 11, 'null' => 'null'))
-            ->addTimestamps('create_time', 'update_time')
-            ->addSoftDelete()
-            ->addIndex(array('nickname', 'email'))
-            ->create();
+
+        $table->addColumn('avatar', 'string', array('null' => 'null', 'limit' => 255))
+            ->update();
     }
 }

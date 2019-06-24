@@ -10,6 +10,7 @@ namespace app\lib\token;
 
 use app\lib\exception\token\TokenException;
 use Firebase\JWT\JWT;
+use LinCmsTp5\admin\model\LinUser;
 use think\Exception;
 use think\facade\Request;
 
@@ -32,10 +33,7 @@ class Token
      */
     public static function refreshToken()
     {
-        $user = [
-            'id' => self::getCurrentUID(),
-            'nickname' => self::getCurrentName()
-        ];
+        $user = self::getCurrentUser();
         $accessToken = self::createAccessToken($user);
 
         return [
@@ -50,8 +48,7 @@ class Token
             'iss' => 'lin-cms-tp5', //签发者
             'iat' => time(), //什么时候签发的
             'exp' => time() + 7200, //过期时间
-            'uid' => $user['id'],
-            'nickname' => $user['nickname']
+            'user' => $user,
         ];
         $token = JWT::encode($payload, $key);
         return $token;
@@ -64,8 +61,7 @@ class Token
         $payload = [
             'iss' => 'lin-cms-tp5', //签发者
             'iat' => time(), //什么时候签发的
-            'uid' => $user['id'],
-            'nickname' => $user['nickname']
+            'user' => $user,
         ];
         $token = JWT::encode($payload, $key);
         return $token;
@@ -76,9 +72,21 @@ class Token
      * @throws Exception
      * @throws TokenException
      */
+    public static function getCurrentUser()
+    {
+        $uid = self::getCurrentUID();
+        $user = LinUser::get($uid);
+        return $user->hidden(['password']);
+    }
+
+    /**
+     * @return mixed
+     * @throws Exception
+     * @throws TokenException
+     */
     public static function getCurrentUID()
     {
-        $uid = self::getCurrentTokenVar('uid');
+        $uid = self::getCurrentTokenVar('id');
         return $uid;
     }
 
@@ -128,8 +136,8 @@ class Token
         } catch (Exception $e) {  //其他错误
             throw new Exception($e->getMessage());
         }
-        if (array_key_exists($key, $jwt)) {
-            return $jwt[$key];
+        if (array_key_exists($key, $jwt['user'])) {
+            return $jwt['user']->$key;
         } else {
             throw new TokenException(['msg' => '尝试获取的Token变量不存在']);
         }

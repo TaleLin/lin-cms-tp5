@@ -10,6 +10,7 @@ namespace app\lib\auth;
 
 use app\lib\token\Token;
 use LinCmsTp5\admin\model\LinUser;
+use app\lib\exception\token\DeployException;
 
 class Auth
 {
@@ -29,6 +30,11 @@ class Auth
      */
     public function check()
     {
+        //判断是否开启加载文件函数注释
+        if(ini_get('opcache.save_comments') === '0' || ini_get('opcache.save_comments') === '')
+        {
+            throw new DeployException();
+        }
         // 接口的权限内容
         $actionAuth = $this->actionAuth();
         // 如果这个接口没有添加权限标识，直接通过
@@ -59,7 +65,7 @@ class Auth
         // 获取当前请求的方法
         $action = $this->request->action();
         // 反射获取当前请求的控制器类
-        $class = new \ReflectionClass('app\\api\\controller\\' . $controllerPath[0] . '\\' . $controllerPath[1]);
+        $class = new \ReflectionClass('app\\api\\controller\\' . strtolower($controllerPath[0]) . '\\' . $controllerPath[1]);
         // 获取控制器类下指定方法的注释
         $actionDoc = $class->getMethod($action)->getDocComment();
         // 获取方法内的权限标识内容

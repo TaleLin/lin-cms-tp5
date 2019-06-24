@@ -23,6 +23,10 @@ Route::group('', function () {
             Route::get('auths', 'api/cms.User/getAllowedApis');
             // 注册一个用户
             Route::post('register', 'api/cms.User/register');
+            // 更新头像
+            Route::put('avatar','api/cms.User/setAvatar');
+            // 查询自己信息
+            Route::get('information','api/cms.User/getInformation');
         });
         // 管理类接口
         Route::group('admin', function () {
@@ -56,6 +60,9 @@ Route::group('', function () {
         Route::get('log/', 'api/cms.Log/getLogs');
         Route::get('log/users', 'api/cms.Log/getUsers');
         Route::get('log/search', 'api/cms.Log/getUserLogs');
+
+        //上传文件类接口
+        Route::post('file/','api/cms.File/postFile');
     });
     Route::group('v1', function () {
         // 查询所有图书
