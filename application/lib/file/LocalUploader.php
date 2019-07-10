@@ -10,12 +10,12 @@ namespace app\lib\file;
 use think\facade\Config;
 use LinCmsTp5\admin\model\LinFile;
 use app\lib\exception\file\FileException;
-
+use LinCmsTp\File;
 /**
  * Class LocalUploader
  * @package app\lib\file
  */
-class LocalUploader extends Files
+class LocalUploader extends File
 {
     /**
      * @return array
