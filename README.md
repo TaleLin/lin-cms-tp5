@@ -91,9 +91,12 @@ git clone https://github.com/ChenJinchuang/lin-cms-tp5.git
 执行命令前请确保你已经安装了composer工具
 
 ```bash
+# 进入项目根目录
 cd lin-cms-tp5
-
-composer install  // 如果长时间卡光标,请更换composer源或者挂梯子
+# 先执行以下命令，全局替换composer源，解决墙的问题
+composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
+# 接着执行以下命令安装依赖包
+composer install
 ```
 
 ## 数据库配置
@@ -117,11 +120,7 @@ Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定
 
 ## 数据迁移
 
-> 如果你已经部署过官方团队其他版本的Lin-cms后端，并且已经生成了相应基础数据库表，可以略过数据迁移章节，但必须将原来lin_user表中super记录删除(密码加密方式不一致，会导致登陆失败)，并在根目录下运行
-
-```bash
-php think seed:run  //这条命令会为你在lin_user表中插入一条记录,即super
-```
+> 如果你已经部署过官方团队其他版本的Lin-cms后端，并且已经生成了相应基础数据库表，可以略过数据迁移章节，但必须将原来lin_user表中super记录删除(密码加密方式不一致，会导致登陆失败)，并在根目录下运行`php think seed:run` ,这条命令会为你在lin_user表中插入一条记录,即super，如果你并没有部署过其他版本的LinCMS后端，请继续阅读后面的内容
 
 配置完数据库连接信息后，我们需要为数据库导入一些核心的基础表，在项目根目录中，打开命令行，输入：
 
