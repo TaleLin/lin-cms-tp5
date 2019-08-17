@@ -188,6 +188,15 @@ You can exit with `CTRL-C`
 
 打开浏览器，访问``http://127.0.0.1:8000``，你会看到一个欢迎界面，至此，Lin-cms-tp5部署完毕，可搭配[lin-cms-vue](https://github.com/TaleLin/lin-cms-vue)使用了。
 
+## 下个版本开发计划
+
+- [ ] 常用异步任务封装
+- [ ] 注解路由
+
+## 更新日志
+
+[查看日志](https://chenjinchuang.github.io/log/)
+
 ## 讨论交流
 
 ### QQ 交流群
@@ -201,11 +210,3 @@ QQ 群号：643205479
 微信搜索：林间有风
 
 <img class="QR-img" src="http://imglf6.nosdn0.126.net/img/YUdIR2E3ME5weEdlNThuRmI4TFh3UWhiNmladWVoaTlXUXpicEFPa1F6czFNYkdmcWRIbGRRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg">
-
-
-## 下个版本开发计划
-
-- [ ] 常用异步任务封装
-- [ ] 注解路由
-- [x] 模型封装
-- [x] 注解验证器
