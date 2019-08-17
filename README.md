@@ -26,7 +26,7 @@
 
 ## 线上 Demo
 
-可直接参考官方团队的线上Demo：[http://face.cms.7yue.pro/](http://face.cms.7yue.pro/)
+可直接参考官方团队的线上Demo：[http://face.cms.7yue.pro/](http://face.cms.7yue.pro/)，用户名:super，密码：123456
 
 ## 什么是 Lin CMS？
 

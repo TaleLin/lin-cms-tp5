@@ -13,16 +13,11 @@ use WangYu\Reflex;
 
 class AuthMap
 {
-    private $authList;
+    private $authScanNamespaceList;
 
     public function __construct()
     {
-        $this->authList = [
-            'app\api\controller\cms\User',
-            'app\api\controller\cms\Admin',
-            'app\api\controller\cms\Log',
-            'app\api\controller\v1\Book',
-        ];
+        $this->authScanNamespaceList = (new Scan())->scanController();
     }
 
     /**
@@ -45,7 +40,7 @@ class AuthMap
     {
         $authList = [];
         // 遍历需要解析@auth注解的控制器类
-        foreach ($this->authList as $value) {
+        foreach ($this->authScanNamespaceList as $value) {
             // 反射控制器类
             $class = new \ReflectionClass($value);
             // 类下面的所有方法的数组
@@ -83,25 +78,11 @@ class AuthMap
         return $methodsAuthGroup;
     }
 
-    /**
-     * @param $doc
-     * @return mixed
-     */
-    public function getMethodDoc($doc)
+    public function getMethodAuthName($class,$method)
     {
-        // Todo 这里的正则纯粹是不会写暂时这样
-        $pattern = "#(@[auth]+\s*[a-zA-Z0-9,]\(')(.*)(',')(.*)('\))#";
-
-        preg_match_all($pattern, $doc, $matches, PREG_PATTERN_ORDER);
-
-        if (empty($matches[0])) {
-            return [];
-        }
-
-        return [
-            $matches[4][0] => array($matches[2][0] => [''])
-        ];
-
+        $authAnnotation = (new Reflex($class, $method))->get('auth');
+        $authName =  empty($authAnnotation) ? '' : $authAnnotation[0][0];
+        return $authName;
     }
 
     public function handleAnnotation(array $annotation)

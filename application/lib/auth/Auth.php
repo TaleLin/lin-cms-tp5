@@ -24,7 +24,9 @@ class Auth
     /**
      * 主方法，拿到当前接口的权限内容，判断当前请求用户是否拥有这个权限。接口无权限标识或超级管理员直接通过
      * @return bool
+     * @throws DeployException
      * @throws \ReflectionException
+     * @throws \WangYu\exception\ReflexException
      * @throws \app\lib\exception\token\TokenException
      * @throws \think\Exception
      */
@@ -46,15 +48,16 @@ class Auth
         // 遍历账户权限字段，格式化数组格式供后续判断
         $authList = $this->recursiveForeach($userAuth['auths']);
         // 判断接口权限是否在账户拥有权限数组内
-        $allowable = in_array(key($actionAuth), $authList) ? true : false;
+        $allowable = in_array($actionAuth, $authList) ? true : false;
         // 返回结果
         return $allowable;
 
     }
 
     /**
-     * @return mixed
+     * @return string
      * @throws \ReflectionException
+     * @throws \WangYu\exception\ReflexException
      */
     protected function actionAuth()
     {
@@ -66,13 +69,9 @@ class Auth
         $action = $this->request->action();
         // 反射获取当前请求的控制器类
         $class = new \ReflectionClass('app\\api\\controller\\' . strtolower($controllerPath[0]) . '\\' . $controllerPath[1]);
-        // 获取控制器类下指定方法的注释
-        $actionDoc = $class->getMethod($action)->getDocComment();
-        // 获取方法内的权限标识内容
-        $actionAuth = (new AuthMap())->getMethodDoc($actionDoc);
-        // $actionAuth返回的是一个数组，由于每个action只会有一个auth,
-        //数组只会有一个元素，直接用current函数返回数组当前元素的值。
-        return current($actionAuth);
+        // 获取方法注解的权限名称
+        $actionAuth = (new AuthMap())->getMethodAuthName($class,$action);
+        return $actionAuth;
     }
 
     /**
