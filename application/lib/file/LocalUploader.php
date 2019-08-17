@@ -10,12 +10,13 @@ namespace app\lib\file;
 use think\facade\Config;
 use LinCmsTp5\admin\model\LinFile;
 use app\lib\exception\file\FileException;
-
+use LinCmsTp\File;
+use think\facade\Env;
 /**
  * Class LocalUploader
  * @package app\lib\file
  */
-class LocalUploader extends Files
+class LocalUploader extends File
 {
     /**
      * @return array
@@ -30,13 +31,14 @@ class LocalUploader extends Files
             $exists = LinFile::get(['md5' => $md5]);
             if ($exists) {
                 array_push($ret, [
-                    'key' => $key,
                     'id' => $exists['id'],
-                    'url' => $host . '/uploads/' . $exists['path']
+                    'key' => $key,
+                    'path' => $exists['path'],
+                    'url' => $host . '/' . $this->storeDir . '/' . $exists['path']
                 ]);
             } else {
                 $size = $this->getSize($file);
-                $info = $file->move($this->storeDir);
+                $info = $file->move(Env::get('root_path') .'/'.'public' .'/'. $this->storeDir);
                 if ($info) {
                     $extension = '.' . $info->getExtension();
                     $path = str_replace('\\','/',$info->getSaveName());
@@ -56,9 +58,10 @@ class LocalUploader extends Files
                     'type' => 1
                 ]);
                 array_push($ret, [
-                    'key' => $key,
                     'id' => $linFile->id,
-                    'url' => $host . '/uploads/' . $path
+                    'key' => $key,
+                    'path' => $path,
+                    'url' => $host . '/' . $this->storeDir . '/' . $path
                 ]);
 
             }
