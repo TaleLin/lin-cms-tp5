@@ -20,6 +20,12 @@
 * 在上一点的基础上，我们会尝试加入一些自己的想法并实现。
 * 局限于本人水平，有些地方还需重构，已经纳入了计划中，当然也会有我没考虑到的，希望有更多人参与进来一起完善，毕竟PHP作为世界上最好的语言不能缺席。
 
+## 专栏教程
+
+* [《Lin CMS PHP&Vue教程》](https://course.7yue.pro/lin/lin-cms-php/)专栏教程连载更新中，通过实战开源前后端分离CMS——Lin CMS全家桶（lin-cms-vue & lin-cms-tp5）为一个前端应用实现内容管理系统。一套教程入门上手vue、ThinkPHP两大框架，自用、工作、私单一次打通。
+
+* 读者反馈：[《Lin CMS PHP&Vue教程》读者反馈贴](https://github.com/ChenJinchuang/lin-cms-tp5/issues/47)
+
 ## 线上文档地址(完善中)
 
 [https://chenjinchuang.github.io/](https://chenjinchuang.github.io/)
