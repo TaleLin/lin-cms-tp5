@@ -8,7 +8,6 @@
 namespace app\api\controller\cms;
 
 use think\facade\Request;
-use think\Controller;
 use app\lib\file\LocalUploader;
 use app\lib\exception\file\FileException;
 
@@ -16,11 +15,12 @@ use app\lib\exception\file\FileException;
  * Class File
  * @package app\api\controller\cms
  */
-class File extends Controller
+class File
 {
     /**
      * @return mixed
      * @throws FileException
+     * @throws \LinCmsTp\exception\FileException
      */
     public function postFile()
     {
