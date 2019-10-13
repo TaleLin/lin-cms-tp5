@@ -46,7 +46,7 @@ class AuthMap
             // 类下面的所有方法的数组
             $methods = $class->getMethods();
             // 类下面所有含有@auth注解的方法的注解内容数组
-            $methodAuthList = $this->getMethodsDoc($class, $methods);
+            $methodAuthList = $this->getMethodsDoc($class->newInstance(), $methods);
             // 插入类权限数组
             array_push($authList, $methodAuthList);
         }
@@ -61,13 +61,18 @@ class AuthMap
      * @param $array
      * @return array
      * @throws \WangYu\exception\ReflexException
+     * @throws \Exception
      */
     private function getMethodsDoc($class, $array)
     {
         $data = [];
         foreach ($array as $value) {
-            $reflex = new Reflex($class, $value->name);
-            $authAnnotation = $reflex->get('auth');
+            $re = new Reflex($class);
+            $re->setMethod($value->name);
+            $authAnnotation = $re->get('auth');
+            if ($authAnnotation === null) {
+                $authAnnotation = [];
+            }
             $authAnnotation = $this->handleAnnotation($authAnnotation);
             if (!empty($authAnnotation)) {
                 array_push($data, $authAnnotation);
@@ -78,21 +83,29 @@ class AuthMap
         return $methodsAuthGroup;
     }
 
-    public function getMethodAuthName($class,$method)
+    /**
+     * @param $class
+     * @param $method
+     * @return string
+     * @throws \Exception
+     */
+    public function getMethodAuthName($class, $method)
     {
-        $authAnnotation = (new Reflex($class, $method))->get('auth');
-        $authName =  empty($authAnnotation) ? '' : $authAnnotation[0][0];
+        $re = new Reflex($class);
+        $re->setMethod($method);
+        $authAnnotation = $re->get('auth');
+        $authName = empty($authAnnotation) ? '' : $authAnnotation[0];
         return $authName;
     }
 
     public function handleAnnotation(array $annotation)
     {
-        if (empty($annotation[0]) || in_array('hidden', $annotation[0])) {
+        if (empty($annotation) || in_array('hidden', $annotation)) {
             return [];
         }
 
         return [
-            $annotation[0][1] => [$annotation[0][0] => ['']]
+            $annotation[1] => [$annotation[0] => ['']]
         ];
     }
 

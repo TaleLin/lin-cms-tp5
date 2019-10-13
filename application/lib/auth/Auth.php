@@ -58,6 +58,7 @@ class Auth
      * @return string
      * @throws \ReflectionException
      * @throws \WangYu\exception\ReflexException
+     * @throws \Exception
      */
     protected function actionAuth()
     {
@@ -70,7 +71,7 @@ class Auth
         // 反射获取当前请求的控制器类
         $class = new \ReflectionClass('app\\api\\controller\\' . strtolower($controllerPath[0]) . '\\' . $controllerPath[1]);
         // 获取方法注解的权限名称
-        $actionAuth = (new AuthMap())->getMethodAuthName($class,$action);
+        $actionAuth = (new AuthMap())->getMethodAuthName($class->newInstance(),$action);
         return $actionAuth;
     }
 
