@@ -27,6 +27,10 @@ Route::group('', function () {
             Route::put('avatar','api/cms.User/setAvatar');
             // 查询自己信息
             Route::get('information','api/cms.User/getInformation');
+            // 用户更新信息
+            Route::put('','api/cms.User/update');
+            // 修改自己密码
+            Route::put('change_password','api/cms.User/changePassword');
         });
         // 管理类接口
         Route::group('admin', function () {
@@ -57,26 +61,30 @@ Route::group('', function () {
 
         });
         // 日志类接口
-        Route::get('log/', 'api/cms.Log/getLogs');
-        Route::get('log/users', 'api/cms.Log/getUsers');
-        Route::get('log/search', 'api/cms.Log/getUserLogs');
-
+        Route::group('log',function (){
+            Route::get('', 'api/cms.Log/getLogs');
+            Route::get('users', 'api/cms.Log/getUsers');
+            Route::get('search', 'api/cms.Log/getUserLogs');
+        });
         //上传文件类接口
-        Route::post('file/','api/cms.File/postFile');
+        Route::post('file','api/cms.File/postFile');
     });
     Route::group('v1', function () {
-        // 查询所有图书
-        Route::get('book/', 'api/v1.Book/getBooks');
-        // 新建图书
-        Route::post('book/', 'api/v1.Book/create');
-        // 查询指定bid的图书
-        Route::get('book/:bid', 'api/v1.Book/getBook');
-        // 搜索图书
+        Route::group('book',function (){
+            // 查询所有图书
+            Route::get('', 'api/v1.Book/getBooks');
+            // 新建图书
+            Route::post('', 'api/v1.Book/create');
+            // 查询指定bid的图书
+            Route::get(':bid', 'api/v1.Book/getBook');
+            // 搜索图书
 
-        // 更新图书
-        Route::put('book/:bid', 'api/v1.Book/update');
-        // 删除图书
-        Route::delete('book/:bid', 'api/v1.Book/delete');
+            // 更新图书
+            Route::put(':bid', 'api/v1.Book/update');
+            // 删除图书
+            Route::delete(':bid', 'api/v1.Book/delete');
+        });
+
     });
 })->middleware(['Auth','ReflexValidate'])->allowCrossDomain();
 

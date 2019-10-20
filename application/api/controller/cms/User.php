@@ -6,7 +6,6 @@ namespace app\api\controller\cms;
 //use app\api\validate\user\RegisterForm; # 开启注释验证器以后，本行可以去掉，这里做更替说明
 use app\lib\token\Token;
 use LinCmsTp5\admin\model\LinUser;
-use think\App;
 use think\Controller;
 use think\facade\Hook;
 use think\Request;
@@ -25,12 +24,43 @@ class User extends Controller
 //        (new LoginForm())->goCheck();  # 开启注释验证器以后，本行可以去掉，这里做更替说明
         $params = $request->post();
 
-        $user = LinUser::verify($params['nickname'], $params['password']);
+        $user = LinUser::verify($params['username'], $params['password']);
         $result = Token::getToken($user);
 
-        Hook::listen('logger', array('uid' => $user->id, 'nickname' => $user->nickname, 'msg' => '登陆成功获取了令牌'));
+        Hook::listen('logger', array('uid' => $user->id, 'username' => $user->username, 'msg' => '登陆成功获取了令牌'));
 
         return $result;
+    }
+
+    /**
+     * 用户更新信息
+     * @param Request $request
+     */
+    public function update(Request $request)
+    {
+        $params = $request->put();
+        $uid = Token::getCurrentUID();
+        LinUser::updateUserInfo($uid, $params);
+        return writeJson(201, '', '操作成功');
+    }
+
+    /**
+     * 修改密码
+     * @validate('ChangePasswordForm')
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \LinCmsTp5\admin\exception\user\UserException
+     * @throws \app\lib\exception\token\TokenException
+     * @throws \think\Exception
+     */
+    public function changePassword(Request $request)
+    {
+        $params = $request->put();
+        $uid = Token::getCurrentUID();
+        LinUser::changePassword($uid, $params);
+
+        Hook::listen('logger', '修改了自己的密码');
+        return writeJson(201, '', '密码修改成功');
     }
 
 

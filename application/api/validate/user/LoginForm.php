@@ -14,12 +14,12 @@ use LinCmsTp5\validate\BaseValidate;
 class LoginForm extends BaseValidate
 {
     protected $rule = [
-        'nickname' => 'require',
+        'username' => 'require',
         'password' => 'require',
     ];
 
     protected $message = [
-        'nickname' => '用户名不能为空',
+        'username' => '用户名不能为空',
         'password' => '密码不能为空'
     ];
 }

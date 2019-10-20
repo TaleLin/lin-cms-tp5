@@ -34,17 +34,17 @@ class Logger
         }
 
         if (is_array($params)) {
-            list('uid' => $uid, 'nickname' => $nickname, 'msg' => $message) = $params;
+            list('uid' => $uid, 'username' => $username, 'msg' => $message) = $params;
         } else {
             $uid = Token::getCurrentUID();
-            $nickname = Token::getCurrentName();
+            $username = Token::getCurrentName();
             $message = $params;
         }
 
         $data = [
-            'message' => $nickname . $message,
+            'message' => $username . $message,
             'user_id' => $uid,
-            'user_name' => $nickname,
+            'user_name' => $username,
             'status_code' => Response::getCode(),
             'method' => Request::method(),
             'path' => Request::path(),
