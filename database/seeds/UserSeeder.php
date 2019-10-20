@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $data = [
-            'nickname' => 'super',
+            'username' => 'super',
             'admin' => 2,
             'active' => 1,
             'email' => '123456@qq.com',

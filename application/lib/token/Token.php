@@ -33,8 +33,12 @@ class Token
      */
     public static function refreshToken()
     {
-        $user = self::getCurrentUser();
-        $accessToken = self::createAccessToken($user);
+        try {
+            $user = self::getCurrentUser();
+            $accessToken = self::createAccessToken($user);
+        } catch (TokenException $ex) {
+            throw new TokenException(['msg' => '令牌刷新异常', 'error_code' => 10100]);
+        }
 
         return [
             'access_token' => $accessToken,
@@ -97,7 +101,7 @@ class Token
      */
     public static function getCurrentName()
     {
-        $uid = self::getCurrentTokenVar('nickname');
+        $uid = self::getCurrentTokenVar('username');
         return $uid;
     }
 
@@ -119,8 +123,8 @@ class Token
 
         if ($type !== 'Bearer') throw new TokenException(['msg' => '接口认证方式需为Bearer']);
 
-        if (!$token) {
-            throw new TokenException(['msg' => '尝试获取的authorization信息不存在']);
+        if (!$token || $token === 'undefined') {
+            throw new TokenException(['msg' => '尝试获取的Authorization信息不存在']);
         }
 
         $secretKey = config('secure.token_salt');
