@@ -1,3 +1,4 @@
+```
 <h1 align="center">
   <a href="http://doc.cms.7yue.pro/">
   <img src="http://doc.cms.7yue.pro/left-logo.png" width="250"/></a>
@@ -86,9 +87,9 @@ Lin 的服务端框架是基于 ThinkPHP5.1的，所以如果你比较熟悉Thin
 
 ## 获取工程项目
 
-```bash
+​```bash
 git clone https://github.com/ChenJinchuang/lin-cms-tp5.git
-```
+​```
 
 > 执行完毕后会生成lin-cms-tp5目录
 
@@ -96,31 +97,35 @@ git clone https://github.com/ChenJinchuang/lin-cms-tp5.git
 
 执行命令前请确保你已经安装了composer工具
 
-```bash
+​```bash
 # 进入项目根目录
 cd lin-cms-tp5
 # 先执行以下命令，全局替换composer源，解决墙的问题
 composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 # 接着执行以下命令安装依赖包
 composer install
-```
+​```
+## 复制环境配置文件
+
+​```bash
+cp .env.example .env
+​```
 
 ## 数据库配置
 
-Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为 lin-cms 的数据库。接着，我们需要在工程中进行一项简单的配置。使用编辑器打开 Lin 工程根目录下``/config/database.php``，找到如下配置项：
+Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为 lin-cms 的数据库。接着，我们需要在工程中进行一项简单的配置。修改.env：
 
-```php
-// 服务器地址
-  'hostname'        => '',
-// 数据库名
-  'database'        => 'lin-cms',
-// 用户名
-  'username'        => 'root',
-// 密码
-  'password'        => '',
-  
-  //省略后面一堆的配置项
-```
+​```
+# 服务器名
+DB_HOSTNAME=
+# 数据库名
+DB_DATABASE=lin_cms
+# 用户名
+DB_USERNAME=
+# 密码
+DB_PASSWORD=
+DB_HOSTPORT=
+​```
 
 **请务必根据自己的实际情况修改此配置项**
 
@@ -130,13 +135,13 @@ Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定
 
 配置完数据库连接信息后，我们需要为数据库导入一些核心的基础表，在项目根目录中，打开命令行，输入：
 
-```bash
+​```bash
 php think migrate:run
-```
+​```
 
 当你看到如下提示时，说明迁移脚本已经启动并在数据库中生成了相应的基础数据库表
 
-```php
+​```php
 == 20190427113042 User: migrating
 == 20190427113042 User: migrated 0.0540s
 
@@ -159,37 +164,37 @@ php think migrate:run
 == 20190427130637 LinPoem: migrated 0.0879s
 
 All Done. Took 0.6255s
-```
+​```
 
 迁移成功后我们需要为lin_user表插入一条数据，作为超级管理员，方便你后续在前端项目中登陆和测试，继续在命令行中输入：
 
-```bash
+​```bash
 php think seed:run
-```
+​```
 
 当你看到如下提示时，说明迁移脚本已经启动并在lin_user表中创建了一条记录
 
-```php
+​```php
 == UserSeeder: seeding
 == UserSeeder: seeded 0.0351s
 
 All Done. Took 0.0385s
-```
+​```
 
 ## 运行
 
 如果前面的过程一切顺利，项目所需的准备工作就已经全部完成，这时候你就可以试着让工程运行起来了。在工程的根目录打开命令行，输入：
 
-```bash
+​```bash
 php think run --port 5000 //启动thinkPHP内置的Web服务器
-```
+​```
 
 启动成功后会看到如下提示：
 
-```php
+​```php
 ThinkPHP Development server is started On <http://127.0.0.1:5000/>
 You can exit with `CTRL-C`
-```
+​```
 
 打开浏览器，访问``http://127.0.0.1:5000``，你会看到一个欢迎界面，至此，Lin-cms-tp5部署完毕，可搭配[lin-cms-vue](https://github.com/TaleLin/lin-cms-vue)使用了。
 
@@ -219,3 +224,4 @@ QQ 群号：643205479
 微信搜索：林间有风
 
 <img class="QR-img" src="http://imglf6.nosdn0.126.net/img/YUdIR2E3ME5weEdlNThuRmI4TFh3UWhiNmladWVoaTlXUXpicEFPa1F6czFNYkdmcWRIbGRRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg">
+```
