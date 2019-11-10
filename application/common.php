@@ -45,7 +45,7 @@ function rand_char($length)
     return $str;
 }
 
-function split_modules($auths, $key = 'module')
+function split_modules($auths, $module = 'module')
 {
     if (empty($auths)) {
         return [];
@@ -131,7 +131,9 @@ function paginate()
 
     $start = $start * $count;
 
-    if ($start < 0 || $count < 0) throw new ParameterException();
+    if ($start < 0 || $count < 0) {
+        throw new ParameterException();
+    }
 
     return [$start, $count];
 }
