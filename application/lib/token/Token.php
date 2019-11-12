@@ -34,10 +34,11 @@ class Token
     public static function refreshToken()
     {
         try {
-            $user = self::getCurrentUser();
+            $uid = self::getCurrentTokenVar('id','refresh_token_salt');
+            $user = LinUser::get($uid);
             $accessToken = self::createAccessToken($user);
         } catch (TokenException $ex) {
-            throw new TokenException(['msg' => '令牌刷新异常', 'error_code' => 10100]);
+            throw new TokenException(['msg' => $ex->msg,'error_code' => 10010]);
         }
 
         return [
@@ -47,7 +48,7 @@ class Token
 
     private static function createAccessToken($user)
     {
-        $key = config('secure.token_salt');
+        $key = config('secure.access_token_salt');
         $payload = [
             'iss' => 'lin-cms-tp5', //签发者
             'iat' => time(), //什么时候签发的
@@ -61,11 +62,12 @@ class Token
 
     private static function createRefreshToken($user)
     {
-        $key = config('secure.token_salt');
+        $key = config('secure.refresh_token_salt');
         $payload = [
             'iss' => 'lin-cms-tp5', //签发者
             'iat' => time(), //什么时候签发的
-            'user' => $user,
+            'exp' => time() + 604800, //过期时间，一个星期
+            'user' => ['id' => $user->id],
         ];
         $token = JWT::encode($payload, $key);
         return $token;
@@ -106,12 +108,13 @@ class Token
     }
 
     /**
-     * @param $key
+     * @param string $key
+     * @param string $tokenType
      * @return mixed
-     * @throws TokenException
      * @throws Exception
+     * @throws TokenException
      */
-    private static function getCurrentTokenVar($key)
+    private static function getCurrentTokenVar($key, $tokenType = 'access_token_salt')
     {
         $authorization = Request::header('authorization');
 
@@ -127,12 +130,12 @@ class Token
             throw new TokenException(['msg' => '尝试获取的Authorization信息不存在']);
         }
 
-        $secretKey = config('secure.token_salt');
+        $secretKey = config("secure.{$tokenType}");
 
         try {
             $jwt = (array)JWT::decode($token, $secretKey, ['HS256']);
         } catch (\Firebase\JWT\SignatureInvalidException $e) {  //签名不正确
-            throw new TokenException(['msg' => '令牌签名不正确']);
+            throw new TokenException(['msg' => '令牌签名不正确，请确认令牌有效性或令牌类型']);
         } catch (\Firebase\JWT\BeforeValidException $e) {  // 签名在某个时间点之后才能用
             throw new TokenException(['msg' => '令牌尚未生效']);
         } catch (\Firebase\JWT\ExpiredException $e) {  // token过期
