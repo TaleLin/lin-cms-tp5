@@ -25,7 +25,6 @@ class Logger
      */
     public function run($params)
     {
-
         // 行为逻辑
         if (empty($params)) {
             throw new LoggerException([
@@ -34,7 +33,7 @@ class Logger
         }
 
         if (is_array($params)) {
-            list('uid' => $uid, 'username' => $username, 'msg' => $message) = $params;
+            list($uid, $username, $message) = $params;
         } else {
             $uid = Token::getCurrentUID();
             $username = Token::getCurrentName();

@@ -104,22 +104,26 @@ composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 # 接着执行以下命令安装依赖包
 composer install
 ```
+## 复制环境配置文件
+
+```bash
+cp .env.example .env
+```
 
 ## 数据库配置
 
-Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为 lin-cms 的数据库。接着，我们需要在工程中进行一项简单的配置。使用编辑器打开 Lin 工程根目录下``/config/database.php``，找到如下配置项：
+Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为 lin-cms 的数据库。接着，我们需要在工程中进行一项简单的配置。修改.env：
 
-```php
-// 服务器地址
-  'hostname'        => '',
-// 数据库名
-  'database'        => 'lin-cms',
-// 用户名
-  'username'        => 'root',
-// 密码
-  'password'        => '',
-  
-  //省略后面一堆的配置项
+```
+# 服务器名
+DB_HOSTNAME=
+# 数据库名
+DB_DATABASE=lin_cms
+# 用户名
+DB_USERNAME=
+# 密码
+DB_PASSWORD=
+DB_HOSTPORT=
 ```
 
 **请务必根据自己的实际情况修改此配置项**
