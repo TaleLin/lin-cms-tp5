@@ -16,7 +16,7 @@
 ## 预防针
 
 * 本项目非官方团队出品，仅出于学习、研究目的丰富下官方项目的语言支持，目前已被收录至官方团队仓库，[点击查看](https://github.com/TaleLin)
-* 本项目采取后跟进官方团队功能的形式，即官方团队出什么功能，这边就跟进开发什么功能，开发者不必前端担心适配问题。
+* 本项目采取后跟进官方团队功能的形式，即官方团队出什么功能，这边就跟进开发什么功能，开发者不必担心前端适配问题。
 * 在上一点的基础上，我们会尝试加入一些自己的想法并实现。
 * 局限于本人水平，有些地方还需重构，已经纳入了计划中，当然也会有我没考虑到的，希望有更多人参与进来一起完善，毕竟PHP作为世界上最好的语言不能缺席。
 
@@ -28,7 +28,7 @@
 
 ## 线上文档地址(完善中)
 
-[https://chenjinchuang.github.io/](https://chenjinchuang.github.io/)
+[http://chenjinchuang.gitee.io/lin-cms-book/](http://chenjinchuang.gitee.io/lin-cms-book/)
 
 ## 线上 Demo
 
@@ -80,7 +80,7 @@ Lin 的服务端框架是基于 ThinkPHP5.1的，所以如果你比较熟悉Thin
 
 ## Server 端必备环境
 
-* 安装MySQL（version： 5.6+）
+* 安装MySQL（version： 5.7+）
 
 * 安装PHP环境(version： 7.1+)
 

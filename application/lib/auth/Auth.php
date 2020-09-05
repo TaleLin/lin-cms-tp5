@@ -8,9 +8,12 @@
 
 namespace app\lib\auth;
 
-use app\lib\token\Token;
+use app\api\service\token\LoginToken;
 use LinCmsTp5\admin\model\LinUser;
 use app\lib\exception\token\DeployException;
+use ReflectionClass;
+use ReflectionException;
+use think\Exception;
 
 class Auth
 {
@@ -25,10 +28,8 @@ class Auth
      * 主方法，拿到当前接口的权限内容，判断当前请求用户是否拥有这个权限。接口无权限标识或超级管理员直接通过
      * @return bool
      * @throws DeployException
-     * @throws \ReflectionException
-     * @throws \WangYu\exception\ReflexException
-     * @throws \app\lib\exception\token\TokenException
-     * @throws \think\Exception
+     * @throws Exception
+     * @throws ReflectionException
      */
     public function check()
     {
@@ -56,8 +57,7 @@ class Auth
 
     /**
      * @return string
-     * @throws \ReflectionException
-     * @throws \WangYu\exception\ReflexException
+     * @throws ReflectionException
      * @throws \Exception
      */
     protected function actionAuth()
@@ -69,7 +69,7 @@ class Auth
         // 获取当前请求的方法
         $action = $this->request->action();
         // 反射获取当前请求的控制器类
-        $class = new \ReflectionClass('app\\api\\controller\\' . strtolower($controllerPath[0]) . '\\' . $controllerPath[1]);
+        $class = new ReflectionClass('app\\api\\controller\\' . strtolower($controllerPath[0]) . '\\' . $controllerPath[1]);
         // 获取方法注解的权限名称
         $actionAuth = (new AuthMap())->getMethodAuthName($class->newInstance(),$action);
         return $actionAuth;
@@ -78,12 +78,12 @@ class Auth
     /**
      * 获取账户信息
      * @return array
-     * @throws \app\lib\exception\token\TokenException
-     * @throws \think\Exception
+     * @throws Exception
      */
     protected function userAuth()
     {
-        $uid = Token::getCurrentUID();
+        // $uid = Token::getCurrentUID();
+        $uid = LoginToken::getInstance()->getCurrentUid();
         $user = LinUser::getUserByUID($uid);
 
         return $user;

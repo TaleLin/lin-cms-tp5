@@ -16,14 +16,14 @@
     }
   ],
   "require": {
-    "php": ">=5.6.0",
+    "php": ">=7.1.0",
     "topthink/framework": "5.1.36",
     "topthink/think-migration": "2.*",
-    "firebase/php-jwt": "^5.0",
     "lin-cms-tp5/base-core": "dev-master",
     "lin-cms-tp5/admin-core": "dev-master",
     "lin-cms-tp/validate-core": "dev-master",
-    "lin-cms-tp/utils-core": "dev-master"
+    "lin-cms-tp/utils-core": "dev-master",
+    "qinchen/web-utils": "^0.0.1"
   },
   "autoload": {
     "psr-4": {

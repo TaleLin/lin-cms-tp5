@@ -9,7 +9,7 @@
 namespace app\api\behavior;
 
 
-use app\lib\token\Token;
+use app\api\service\token\LoginToken;
 use LinCmsTp5\admin\exception\logger\LoggerException;
 use LinCmsTp5\admin\model\LinLog;
 use think\facade\Request;
@@ -20,8 +20,6 @@ class Logger
     /**
      * @param $params
      * @throws LoggerException
-     * @throws \app\lib\exception\token\TokenException
-     * @throws \think\Exception
      */
     public function run($params)
     {
@@ -36,8 +34,11 @@ class Logger
         if (is_array($params)) {
             list('uid' => $uid, 'username' => $username, 'msg' => $message) = $params;
         } else {
-            $uid = Token::getCurrentUID();
-            $username = Token::getCurrentName();
+            // $uid = Token::getCurrentUID();
+            // $username = Token::getCurrentName();
+            $tokenService = LoginToken::getInstance();
+            $uid = $tokenService->getCurrentUid();
+            $username = $tokenService->getCurrentUserName();
             $message = $params;
         }
 
