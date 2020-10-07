@@ -8,54 +8,72 @@
 
 namespace app\api\controller\cms;
 
-use LinCmsTp5\admin\model\LinLog;
+use app\api\service\admin\Log as LogService;
+use LinCmsTp5\exception\ParameterException;
 use think\Request;
 
 class Log
 {
 
     /**
-     * @auth('查询所有日志','日志')
+     * @groupRequired
+     * @permission('查询所有日志','日志')
      * @param Request $request
+     * @param('page','分页数','integer')
+     * @param('count','分页值','integer')
+     * @param('start','开始日期','date')
+     * @param('end','结束日期','date')
      * @return array
-     * @throws \LinCmsTp5\admin\exception\logger\LoggerException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws ParameterException
      */
     public function getLogs(Request $request)
     {
-        $params = $request->get();
+        $start = $request->get('start');
+        $end = $request->get('end');
+        $name = $request->get('name');
+        $page = $request->get('page/d', 0);
+        $count = $request->get('count/d', 10);
 
-        $result = LinLog::getLogs($params);
-        return $result;
+        return LogService::getLogs($page, $count, $start, $end, $name);
     }
 
     /**
-     * @auth('搜索日志','日志')
+     * @groupRequired
+     * @permission('搜索日志','日志')
      * @param Request $request
+     * @param('page','分页数','integer')
+     * @param('count','分页值','integer')
+     * @param('start','开始日期','date')
+     * @param('end','结束日期','date')
      * @return array
-     * @throws \LinCmsTp5\admin\exception\logger\LoggerException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @throws ParameterException
      */
     public function getUserLogs(Request $request)
     {
-        $params = $request->get();
+        $start = $request->get('start');
+        $end = $request->get('end');
+        $name = $request->get('name');
+        $keyword = $request->get('keyword');
+        $page = $request->get('page/d', 0);
+        $count = $request->get('count/d', 10);
 
-        $result = LinLog::getLogs($params);
-        return $result;
+        return LogService::searchLogs($page, $count, $start, $end, $name, $keyword);
     }
 
     /**
-     * @auth('查询日志记录的用户','日志')
+     * @groupRequired
+     * @permission('查询日志记录的用户','日志')
+     * @param Request $request
+     * @param('page','分页数','integer')
+     * @param('count','分页值','integer')
      * @return array
+     * @throws ParameterException
      */
-    public function getUsers()
+    public function getUsers(Request $request)
     {
-        $users = LinLog::column('user_name');
-        $result = array_unique($users);
-        return $result;
+        $page = $request->get('page/d', 0);
+        $count = $request->get('count/d', 10);
+
+        return LogService::getUserNames($page, $count);
     }
 }

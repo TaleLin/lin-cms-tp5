@@ -4,16 +4,18 @@ namespace app\api\controller\cms;
 
 //use app\api\validate\user\LoginForm;  # 开启注释验证器以后，本行可以去掉，这里做更替说明
 //use app\api\validate\user\RegisterForm; # 开启注释验证器以后，本行可以去掉，这里做更替说明
+use app\api\service\admin\User as UserService;
 use app\api\service\token\LoginToken;
+use app\lib\exception\AuthFailedException;
+use app\lib\exception\NotFoundException;
+use app\lib\exception\OperationException;
+use app\lib\exception\RepeatException;
+use app\lib\exception\token\ForbiddenException;
 use app\lib\exception\token\TokenException;
-use LinCmsTp5\admin\exception\user\UserException;
-use LinCmsTp5\admin\model\LinUser;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
-use think\Exception;
 use think\exception\DbException;
 use think\facade\Hook;
-use think\Model;
 use think\Request;
 use think\response\Json;
 
@@ -33,22 +35,51 @@ class User
         $this->loginTokenService = LoginToken::getInstance();
     }
 
+
     /**
-     * 账户登陆
+     * @adminRequired
+     * @permission('注册','管理员','hidden')
+     * @param Request $request
+     * @validate('RegisterForm')
+     * @return Json
+     * @throws NotFoundException
+     * @throws OperationException
+     * @throws RepeatException
+     * @throws ForbiddenException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
+     * @throws DbException
+     */
+    public function register(Request $request)
+    {
+        $params = $request->post();
+        $user = UserService::createUser($params);
+
+        Hook::listen('logger', "新建了用户：{$user['username']}");
+        return writeJson(201, $user['id'], '注册用户成功');
+    }
+
+    /**
      * @param Request $request
      * @validate('LoginForm')
      * @return array
-     * @throws Exception
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws NotFoundException
+     * @throws AuthFailedException
      */
-    public function login(Request $request)
+    public function userLogin(Request $request)
     {
-        //        (new LoginForm())->goCheck();  # 开启注释验证器以后，本行可以去掉，这里做更替说明
-        $params = $request->post();
+        $username = $request->post('username');
+        $password = $request->post('password');
+        $user = UserService::verify($username, $password);
 
-        $user = LinUser::verify($params['username'], $params['password']);
-        $token = $this->loginTokenService->getToken($user->toArray());
-        Hook::listen('logger', array('uid' => $user->id, 'username' => $user->username, 'msg' => '登陆成功获取了令牌'));
+        $tokenExtend = UserService::generateTokenExtend($user);
 
+        $token = $this->loginTokenService->getToken($tokenExtend);
+
+        Hook::listen('logger', array('uid' => $user->id, 'username' => $user->identifier, 'msg' => '登陆成功获取了令牌'));
         return [
             'access_token' => $token['accessToken'],
             'refresh_token' => $token['refreshToken']
@@ -56,108 +87,67 @@ class User
     }
 
     /**
-     * 用户更新信息
-     * @param Request $request
-     * @return Json
-     * @throws UserException
+     * @return array
+     * @throws TokenException
      */
-    public function update(Request $request)
+    public function refreshToken()
     {
-        $params = $request->put();
-        $uid = $this->loginTokenService->getCurrentUid();
-        LinUser::updateUserInfo($uid, $params);
-        return writeJson(201, '', '操作成功');
+        $token = $this->loginTokenService->getTokenFromHeaders();
+        $token = $this->loginTokenService->refresh($token);
+        return [
+            'access_token' => $token['accessToken']
+        ];
     }
 
     /**
-     * 修改密码
-     * @validate('ChangePasswordForm')
-     * @param Request $request
-     * @return Json
-     * @throws UserException
-     */
-    public function changePassword(Request $request)
-    {
-        $params = $request->put();
-        $uid = $this->loginTokenService->getCurrentUid();
-        LinUser::changePassword($uid, $params);
-
-        Hook::listen('logger', '修改了自己的密码');
-        return writeJson(201, '', '密码修改成功');
-    }
-
-
-    /**
-     * 查询自己拥有的权限
-     * @return array|string|Model
-     * @throws UserException
-     * @throws DataNotFoundException
-     * @throws ModelNotFoundException
-     * @throws DbException
+     * @loginRequired
      */
     public function getAllowedApis()
     {
         $uid = $this->loginTokenService->getCurrentUid();
-        $result = LinUser::getUserByUID($uid);
-        return $result;
+        return UserService::getPermissions($uid);
     }
 
     /**
-     * @auth('创建用户','管理员','hidden')
-     * @param Request $request
-     * @validate('RegisterForm')
-     * @return Json
-     * @throws Exception
-     * @throws DataNotFoundException
-     * @throws ModelNotFoundException
-     * @throws DbException
-     */
-    public function register(Request $request)
-    {
-        // (new RegisterForm())->goCheck(); # 开启注释验证器以后，本行可以去掉，这里做更替说明
-        $params = $request->post();
-        LinUser::createUser($params);
-
-        Hook::listen('logger', '创建了一个用户');
-
-        return writeJson(201, '', '用户创建成功');
-    }
-
-    /**
+     * @loginRequired
      * @return mixed
      */
     public function getInformation()
     {
         $uid = $this->loginTokenService->getCurrentUid();
-        $user = LinUser::get($uid);
-        return $user->hidden(['password']);
+        return UserService::getInformation($uid);
     }
 
     /**
+     * @loginRequired
+     * @param Request $request
+     * @validate('UpdateUserForm')
+     * @return Json
+     * @throws RepeatException
+     */
+    public function update(Request $request)
+    {
+        $params = $request->put();
+        $row = UserService::updateUser($params);
+        return writeJson(200, $row, '用户信息更新成功');
+    }
+
+    /**
+     * @loginRequired
+     * @validate('ChangePasswordForm')
      * @param Request $request
      * @return Json
-     * @throws UserException
+     * @throws AuthFailedException
+     * @throws NotFoundException
      */
-    public function setAvatar(Request $request)
+    public function changePassword(Request $request)
     {
-        $url = $request->put('avatar');
-        $uid = $this->loginTokenService->getCurrentUid();
+        $oldPassword = $request->put('old_password');
+        $newPassword = $request->put('new_password');
 
-        LinUser::updateUserAvatar($uid, $url);
+        $row = UserService::changePassword($oldPassword, $newPassword);
 
-        return writeJson(201, '', '更新头像成功');
-    }
-
-
-    /**
-     * @return array
-     * @throws TokenException
-     * @throws Exception
-     */
-    public function refresh()
-    {
-        $token = $this->loginTokenService->getTokenFromHeaders();
-        $result = $this->loginTokenService->refresh($token);
-        return $result;
+        Hook::listen('logger', '修改了自己的密码');
+        return writeJson(200, $row, '密码修改成功');
     }
 }

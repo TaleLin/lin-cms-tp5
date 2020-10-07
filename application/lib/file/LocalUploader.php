@@ -7,11 +7,12 @@
 
 namespace app\lib\file;
 
-use think\facade\Config;
-use LinCmsTp5\admin\model\LinFile;
+use app\api\model\admin\LinFile;
 use app\lib\exception\file\FileException;
 use LinCmsTp\File;
+use think\facade\Config;
 use think\facade\Env;
+
 /**
  * Class LocalUploader
  * @package app\lib\file
@@ -25,7 +26,7 @@ class LocalUploader extends File
     public function upload()
     {
         $ret = [];
-        $host = Config::get('file.host') ?? "http://127.0.0.1:8000";
+        $host = Config::get('file.host') ?? "http://127.0.0.1:5000";
         foreach ($this->files as $key => $file) {
             $md5 = $this->generateMd5($file);
             $exists = LinFile::get(['md5' => $md5]);
@@ -38,14 +39,14 @@ class LocalUploader extends File
                 ]);
             } else {
                 $size = $this->getSize($file);
-                $info = $file->move(Env::get('root_path') .'/'.'public' .'/'. $this->storeDir);
+                $info = $file->move(Env::get('root_path') . '/' . 'public' . '/' . $this->storeDir);
                 if ($info) {
                     $extension = '.' . $info->getExtension();
-                    $path = str_replace('\\','/',$info->getSaveName());
+                    $path = str_replace('\\', '/', $info->getSaveName());
                     $name = $info->getFilename();
                 } else {
                     throw new FileException([
-                        'msg' => $this->getError,
+                        'msg' => "存储本地文件失败",
                         'error_code' => 60001
                     ]);
                 }

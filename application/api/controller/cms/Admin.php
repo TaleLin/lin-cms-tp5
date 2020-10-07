@@ -8,211 +8,241 @@
 
 namespace app\api\controller\cms;
 
-use app\lib\auth\AuthMap;
-use LinCmsTp5\admin\exception\group\GroupException;
-use LinCmsTp5\admin\model\LinAuth;
-use LinCmsTp5\admin\model\LinGroup;
-use LinCmsTp5\admin\model\LinUser;
+use app\api\service\admin\Admin as AdminService;
+use app\lib\exception\NotFoundException;
+use app\lib\exception\OperationException;
+use app\lib\exception\token\ForbiddenException;
+use LinCmsTp5\exception\ParameterException;
+use ReflectionException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\db\Query;
+use think\exception\DbException;
 use think\facade\Hook;
 use think\Request;
+use think\response\Json;
 
 class Admin
 {
+    /**
+     * @adminRequired
+     * @permission('查询所有可分配的权限','管理员','hidden')
+     * @return array
+     * @throws ReflectionException
+     */
+    public function getAllPermissions()
+    {
+        return AdminService::getAllPermissions();
+    }
 
     /**
-     * 配置hidden后，这个权限信息不会挂载到权限图，获取所有可分配的权限时不会显示这个权限
-     * @auth('查询所有用户','管理员','hidden')
+     * @adminRequired
+     * @permission('查询所有用户','管理员','hidden')
      * @param Request $request
+     * @param('page','分页数','integer')
+     * @param('count','分页值','integer')
+     * @param('group_id','分组id','integer')
      * @return array
-     * @throws \think\exception\DbException
+     * @throws ParameterException
      */
     public function getAdminUsers(Request $request)
     {
-        $params = $request->get();
+        $page = $request->get('page/d', 0);
+        $count = $request->get('count/d', 10);
+        $groupId = $request->get('group_id/d');
 
-        $result = LinUser::getAdminUsers($params);
-        return $result;
+        return AdminService::getUsers($page, $count, $groupId);
     }
 
     /**
-     * @auth('修改用户密码','管理员','hidden')
+     * @adminRequired
+     * @permission('修改用户密码','管理员','hidden')
+     * @validate('ResetPasswordValidator')
      * @param Request $request
-     * @return \think\response\Json
-     * @throws \LinCmsTp5\admin\exception\user\UserException
+     * @param $id
+     * @return Json
+     * @throws NotFoundException
      */
-    public function changeUserPassword(Request $request)
+    public function changeUserPassword(Request $request, $id)
     {
-        $params = $request->param();
+        $newPassword = $request->put('new_password');
+        AdminService::changeUserPassword($id, $newPassword);
+        Hook::listen('logger', "修改了用户ID为{$id}的密码");
 
-        LinUser::resetPassword($params);
-        return writeJson(201, '', '密码修改成功');
+        return writeJson(200, null, '修改成功', 4);
     }
 
     /**
-     * @auth('删除用户','管理员','hidden')
-     * @param $uid
-     * @return \think\response\Json
-     * @throws \think\Exception
+     * @adminRequired
+     * @permission('删除用户','管理员','hidden')
+     * @param int $id
+     * @param('id','用户id','require|integer')
+     * @return Json
+     * @throws NotFoundException
+     * @throws OperationException
      */
-    public function deleteUser($uid)
+    public function deleteUser(int $id)
     {
-        LinUser::deleteUser($uid);
-        Hook::listen('logger', '删除了用户id为' . $uid . '的用户');
-        return writeJson(201, '', '操作成功');
+        AdminService::deleteUser($id);
+        Hook::listen('logger', "删除了用户ID为：{$id}的用户");
+        return writeJson(201, $id, '删除用户成功', 5);
     }
 
     /**
-     * @auth('管理员更新用户信息','管理员','hidden')
+     * @adminRequired
+     * @permission('管理员更新用户信息','管理员','hidden')
      * @param Request $request
-     * @return \think\response\Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws \LinCmsTp5\admin\exception\user\UserException
+     * @param('id','用户id','require|integer')
+     * @param('group_ids','分组id','require|array|min:1')
+     * @return Json
+     * @throws NotFoundException
+     * @throws OperationException
+     * @throws ForbiddenException
+     * @throws DataNotFoundException
+     * @throws ModelNotFoundException
+     * @throws DbException
      */
-    public function updateUser(Request $request)
+    public function updateUser(Request $request, $id)
     {
-        $params = $request->param();
-        LinUser::updateUser($params);
+        $groupIds = $request->put('group_ids');
+        AdminService::updateUserInfo($id, $groupIds);
 
-        return writeJson(201, '', '操作成功');
+        Hook::listen('logger', "更新了用户：{$id}的所属分组");
+        return writeJson(201, $id, '更新用户成功', 6);
     }
 
     /**
-     * @auth('查询所有权限组','管理员','hidden')
-     * @return mixed
+     * @adminRequired
+     * @permission('查询所有分组','管理员','hidden')
      */
     public function getGroupAll()
     {
-        $result = LinGroup::all();
-
-        return $result;
+        return AdminService::getAllGroups();
     }
 
     /**
-     * @auth('查询一个权限组及其权限','管理员','hidden')
-     * @param $id
-     * @return array|\PDOStatement|string|\think\Model
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws GroupException
+     * @adminRequired
+     * @permission('查询一个权限组及其权限','管理员','hidden')
+     * @param int $id
+     * @param('id','分组id','require|integer')
+     * @return Query
+     * @throws DbException
+     * @throws NotFoundException
      */
-    public function getGroup($id)
+    public function getGroup(int $id)
     {
-        $result = LinGroup::getGroupByID($id);
-
-        return $result;
-    }
-
-
-    /**
-     * @auth('删除一个权限组','管理员','hidden')
-     * @param $id
-     * @return \think\response\Json
-     * @throws GroupException
-     */
-    public function deleteGroup($id)
-    {
-        //查询当前权限组下是否存在用户
-        $hasUser = LinUser::get(['group_id'=>$id]);
-        if($hasUser)
-        {
-            throw new GroupException([
-                'code' => 412,
-                'msg' => '分组下存在用户，删除分组失败',
-                'error_code' => 30005
-            ]);
-        }
-        LinGroup::deleteGroupAuth($id);
-        Hook::listen('logger', '删除了权限组id为' . $id . '的权限组');
-        return writeJson(201, '', '删除分组成功');
+        return AdminService::getGroup($id);
     }
 
     /**
-     * @auth('新建权限组','管理员','hidden')
+     * @adminRequired
+     * @permission('新建一个权限组','管理员','hidden')
      * @param Request $request
-     * @return \think\response\Json
-     * @throws \ReflectionException
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     * @throws GroupException
+     * @param('name','分组名字','require')
+     * @param('info','分组信息','require')
+     * @param('permission_ids','权限id','require|array|min:1')
+     * @return Json
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws NotFoundException
+     * @throws OperationException
      */
     public function createGroup(Request $request)
     {
-        $params = $request->post();
+        $name = $request->post('name');
+        $info = $request->post('info');
+        $permissionIds = $request->post('permission_ids');
 
-        LinGroup::createGroup($params);
-        return writeJson(201, '', '成功');
+        $groupId = AdminService::createGroup($name, $info, $permissionIds);
+
+        Hook::listen('logger', "创建了分组：{$name}");
+        return writeJson(201, $groupId, '新增分组成功', 15);
     }
 
     /**
-     * @auth('更新一个权限组','管理员','hidden')
+     * @adminRequired
+     * @permission('更新一个权限组','管理员','hidden')
      * @param Request $request
-     * @param $id
-     * @return \think\response\Json
-     * @throws \think\Exception
+     * @param int $id
+     * @param('id','分组id','require|integer')
+     * @param('info','分组信息','require')
+     * @param('name','分组名字','require')
+     * @return Json
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws NotFoundException
      */
-    public function updateGroup(Request $request, $id)
+    public function updateGroup(Request $request, int $id)
     {
-        $params = $request->put();
+        $name = $request->put('name');
+        $info = $request->put('info');
 
-        $group = LinGroup::find($id);
-        if (!$group) {
-            throw new GroupException([
-                'code' => 404,
-                'msg' => '指定的分组不存在',
-                'errorCode' => 30003
-            ]);
-        }
-        $group->save($params);
-        return writeJson(201, '', '更新分组成功');
+        $res = AdminService::updateGroup($id, $name, $info);
+
+        Hook::listen('logger', "更新了id为{$id}的分组");
+        return writeJson(200, $res, '更新分组信息成功', 7);
     }
 
     /**
-     * @auth('查询所有可分配的权限','管理员','hidden')
-     * @return array
-     * @throws \ReflectionException
-     * @throws \WangYu\exception\ReflexException
+     * @adminRequired
+     * @permission('更新一个权限组','管理员','hidden')
+     * @param int $id
+     * @param('id','分组id','require|integer')
+     * @return Json
+     * @throws ForbiddenException
+     * @throws NotFoundException
+     * @throws OperationException
      */
-    public function authority()
+    public function deleteGroup(int $id)
     {
-        $result = (new AuthMap())->run();
+        AdminService::deleteGroup($id);
 
-        return $result;
+        Hook::listen('logger', "删除了id为{$id}的分组");
+        return writeJson(200, null, '删除分组成功', 8);
     }
 
     /**
-     * @auth('删除多个权限','管理员','hidden')
+     * @adminRequired
+     * @permission('分配多个权限','管理员','hidden')
      * @param Request $request
-     * @return \think\response\Json
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
+     * @param('group_id','分组id','require|integer')
+     * @param('permission_ids','权限id','require|array|min:1')
+     * @return Json
+     * @throws DbException
+     * @throws NotFoundException
+     * @throws OperationException
      */
-    public function removeAuths(Request $request)
+    public function dispatchPermissions(Request $request)
     {
-        $params = $request->post();
+        $groupId = $request->post('group_id');
+        $permissionIds = $request->post('permission_ids');
 
-        LinAuth::where(['group_id' => $params['group_id'], 'auth' => $params['auths']])
-            ->delete();
-        return writeJson(201, '', '删除权限成功');
+        AdminService::dispatchPermissions($groupId, $permissionIds);
+
+        Hook::listen('logger', "修改了分组ID为{$groupId}的权限");
+        return writeJson(200, null, '分配权限成功', 9);
     }
 
     /**
-     * @auth('分配多个权限','管理员','hidden')
+     * @adminRequired
+     * @permission('删除多个权限','管理员','hidden')
      * @param Request $request
-     * @return \think\response\Json
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
+     * @param('group_id','分组id','require|integer')
+     * @param('permission_ids','权限id','require|array|min:1')
+     * @return Json
+     * @throws DbException
+     * @throws NotFoundException
      */
-    public function dispatchAuths(Request $request)
+    public function removePermissions(Request $request)
     {
-        $params = $request->post();
+        $groupId = $request->post('group_id');
+        $permissionIds = $request->post('permission_ids');
 
-        LinAuth::dispatchAuths($params);
-        Hook::listen('logger', '修改了id为' . $params['group_id'] . '的权限');
-        return writeJson(201, '', '添加权限成功');
+        $deleted = AdminService::removePermissions($groupId, $permissionIds);
+
+        Hook::listen('logger', "修改了分组ID为{$groupId}的权限");
+        return writeJson(200, $deleted, '删除权限成功', 10);
     }
 }

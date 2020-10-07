@@ -11,6 +11,7 @@ namespace app\api\controller\v1;
 use app\api\model\Book as BookModel;
 use think\facade\Hook;
 use think\Request;
+use think\response\Json;
 
 class Book
 {
@@ -47,7 +48,7 @@ class Book
     /**
      * 新建图书
      * @param Request $request
-     * @return \think\response\Json
+     * @return Json
      */
     public function create(Request $request)
     {
@@ -65,9 +66,10 @@ class Book
     }
 
     /**
-     * @auth('删除图书','图书')
+     * @groupRequired
+     * @permission('删除图书','图书')
      * @param $bid
-     * @return \think\response\Json
+     * @return Json
      */
     public function delete($bid)
     {

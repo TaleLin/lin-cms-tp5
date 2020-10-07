@@ -107,7 +107,7 @@ composer install
 
 ## 数据库配置
 
-Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为 lin-cms 的数据库。接着，我们需要在工程中进行一项简单的配置。使用编辑器打开 Lin 工程根目录下``/config/database.php``，找到如下配置项：
+Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定。例如，新建一个名为` lin-cms `的数据库。接着，我们需要在工程中进行一项简单的配置。使用编辑器打开 Lin 工程根目录下``/config/database.php``，找到如下配置项：
 
 ```php
 // 服务器地址
@@ -124,57 +124,9 @@ Lin 需要你自己在 MySQL 中新建一个数据库，名字由你自己决定
 
 **请务必根据自己的实际情况修改此配置项**
 
-## 数据迁移
+## 导入数据
 
-> 如果你已经部署过官方团队其他版本的Lin-cms后端，并且已经生成了相应基础数据库表，可以略过数据迁移章节，但必须将原来lin_user表中super记录删除(密码加密方式不一致，会导致登陆失败)，并在根目录下运行`php think seed:run` ,这条命令会为你在lin_user表中插入一条记录,即super，如果你并没有部署过其他版本的LinCMS后端，请继续阅读后面的内容
-
-配置完数据库连接信息后，我们需要为数据库导入一些核心的基础表，在项目根目录中，打开命令行，输入：
-
-```bash
-php think migrate:run
-```
-
-当你看到如下提示时，说明迁移脚本已经启动并在数据库中生成了相应的基础数据库表
-
-```php
-== 20190427113042 User: migrating
-== 20190427113042 User: migrated 0.0540s
-
-== 20190427125215 Book: migrating
-== 20190427125215 Book: migrated 0.0593s
-
-== 20190427125655 LinAuth: migrating
-== 20190427125655 LinAuth: migrated 0.0721s
-
-== 20190427125839 LinEvent: migrating
-== 20190427125839 LinEvent: migrated 0.0648s
-
-== 20190427125956 LinGroup: migrating
-== 20190427125956 LinGroup: migrated 0.0656s
-
-== 20190427130203 LinLog: migrating
-== 20190427130203 LinLog: migrated 0.0558s
-
-== 20190427130637 LinPoem: migrating
-== 20190427130637 LinPoem: migrated 0.0879s
-
-All Done. Took 0.6255s
-```
-
-迁移成功后我们需要为lin_user表插入一条数据，作为超级管理员，方便你后续在前端项目中登陆和测试，继续在命令行中输入：
-
-```bash
-php think seed:run
-```
-
-当你看到如下提示时，说明迁移脚本已经启动并在lin_user表中创建了一条记录
-
-```php
-== UserSeeder: seeding
-== UserSeeder: seeded 0.0351s
-
-All Done. Took 0.0385s
-```
+接下来使用你本机上任意一款数据库可视化工具，为已经创建好的`lin-cms`数据库运行lin-cms-tp5根目录下的`schema.sql`文件，这个SQL脚本文件将为为你生成一些基础的数据库表和数据。
 
 ## 运行
 
@@ -193,18 +145,13 @@ You can exit with `CTRL-C`
 
 打开浏览器，访问``http://127.0.0.1:5000``，你会看到一个欢迎界面，至此，Lin-cms-tp5部署完毕，可搭配[lin-cms-vue](https://github.com/TaleLin/lin-cms-vue)使用了。
 
-## 下个版本开发计划
-
-- [ ] 常用异步任务封装
-- [ ] 注解路由
-
 ## 更新日志
 
-[查看日志](https://chenjinchuang.github.io/log/)
+[查看日志](http://chenjinchuang.gitee.io/lin-cms-book/log/)
 
 ## 常见问题
 
-[查看常见问题](https://chenjinchuang.github.io/qa/)
+[查看常见问题](http://chenjinchuang.gitee.io/lin-cms-book/qa/)
 
 ## 讨论交流
 

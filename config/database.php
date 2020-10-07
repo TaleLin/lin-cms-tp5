@@ -15,7 +15,7 @@ return [
     // 服务器地址
     'hostname'        => '127.0.0.1',
     // 数据库名
-    'database'        => 'lin-cms',
+    'database'        => 'lin_cms',
     // 用户名
     'username'        => 'root',
     // 密码
@@ -59,5 +59,5 @@ return [
     // 是否需要断线重连
     'break_reconnect' => false,
     // 断线标识字符串
-    'break_match_str' => [],
+    'break_match_str' => []
 ];

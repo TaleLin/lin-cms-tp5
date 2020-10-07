@@ -2,10 +2,10 @@
 
 namespace app\http\middleware;
 
-use app\lib\auth\Auth as Permission;
+use app\lib\authenticator\Authenticator;
 use app\lib\exception\token\ForbiddenException;
 
-class Auth
+class Authentication
 {
     /**
      * 权限验证
@@ -19,7 +19,7 @@ class Auth
     public function handle($request, \Closure $next)
     {
 
-        $auth = (new Permission($request))->check();
+        $auth = (new Authenticator($request))->check();
 
         if (!$auth) {
             throw new ForbiddenException();

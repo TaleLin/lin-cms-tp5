@@ -17,7 +17,7 @@ class RegisterForm extends BaseValidate
         'password' => 'require|confirm:confirm_password',
         'confirm_password' => 'require',
         'username' => 'require|length:2,10',
-        'group_id' => 'require|>:0|number',
+        'group_ids' => 'array',
         'email' => 'email'
     ];
 }
