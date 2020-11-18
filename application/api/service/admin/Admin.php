@@ -16,7 +16,7 @@ use app\api\model\admin\LinUserGroup as LinUserGroupModel;
 use app\api\model\admin\LinUserIdentity as LinUserIdentityModel;
 use app\lib\authenticator\PermissionScan;
 use app\lib\enum\GroupLevelEnum;
-use app\lib\enum\MountType;
+use app\lib\enum\MountTypeEnum;
 use app\lib\exception\NotFoundException;
 use app\lib\exception\OperationException;
 use app\lib\exception\token\ForbiddenException;
@@ -51,7 +51,7 @@ class Admin
             }
         }
 
-        $permissions = LinPermissionModel::where('mount', MountType::MOUNT)
+        $permissions = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
             ->select()->toArray();
         $result = [];
         foreach ($permissions as $permission) {
@@ -219,7 +219,7 @@ class Admin
         }
 
         foreach ($permissionIds as $permissionId) {
-            $permission = LinPermissionModel::where('mount', MountType::MOUNT)
+            $permission = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
                 ->get($permissionId);
             if (!$permission) {
                 throw new NotFoundException(['error_code' => 10231, 'msg' => '分配了不存在的权限']);
@@ -303,7 +303,6 @@ class Admin
      */
     public static function dispatchPermissions(int $id, array $permissionIds)
     {
-
         $group = LinGroupModel::where('level', '<>', GroupLevelEnum::ROOT)
             ->get($id);
         if (!$group) {
@@ -311,20 +310,16 @@ class Admin
         }
 
         foreach ($permissionIds as $permissionId) {
-            $permission = LinPermissionModel::where('mount', MountType::MOUNT)
+            $permission = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
                 ->get($permissionId);
             if (!$permission) {
                 throw new NotFoundException(['error_code' => 10231, 'msg' => '分配了不存在的权限']);
             }
         }
 
-        Db::startTrans();
         try {
-            $group->permissions()->detach();
             $group->permissions()->attach($permissionIds);
-            Db::commit();
         } catch (Exception $ex) {
-            Db::rollback();
             throw new OperationException(['msg' => '权限分配失败']);
         }
     }
@@ -345,7 +340,7 @@ class Admin
         }
 
         foreach ($permissionIds as $permissionId) {
-            $permission = LinPermissionModel::where('mount', MountType::MOUNT)
+            $permission = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
                 ->get($permissionId);
             if (!$permission) {
                 throw new NotFoundException(['error_code' => 10231, 'msg' => '分配了不存在的权限']);

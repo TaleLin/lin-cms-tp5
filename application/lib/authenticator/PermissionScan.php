@@ -9,7 +9,7 @@
 namespace app\lib\authenticator;
 
 
-use app\lib\enum\MountType;
+use app\lib\enum\MountTypeEnum;
 use Exception;
 use ReflectionClass;
 use ReflectionException;
@@ -89,7 +89,7 @@ class PermissionScan
         return [
             'name' => $annotation[0],
             'module' => $annotation[1],
-            'mount' => MountType::MOUNT
+            'mount' => MountTypeEnum::MOUNT
         ];
     }
 }

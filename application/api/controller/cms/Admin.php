@@ -13,12 +13,14 @@ use app\lib\exception\NotFoundException;
 use app\lib\exception\OperationException;
 use app\lib\exception\token\ForbiddenException;
 use LinCmsTp5\exception\ParameterException;
+use PDOStatement;
 use ReflectionException;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
 use think\db\Query;
 use think\exception\DbException;
 use think\facade\Hook;
+use think\model\Collection;
 use think\Request;
 use think\response\Json;
 
@@ -28,6 +30,9 @@ class Admin
      * @adminRequired
      * @permission('查询所有可分配的权限','管理员','hidden')
      * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
      * @throws ReflectionException
      */
     public function getAllPermissions()
@@ -114,6 +119,11 @@ class Admin
     /**
      * @adminRequired
      * @permission('查询所有分组','管理员','hidden')
+     * @return array|PDOStatement|string|\think\Collection|Collection
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws NotFoundException
      */
     public function getGroupAll()
     {
@@ -139,7 +149,6 @@ class Admin
      * @permission('新建一个权限组','管理员','hidden')
      * @param Request $request
      * @param('name','分组名字','require')
-     * @param('info','分组信息','require')
      * @param('permission_ids','权限id','require|array|min:1')
      * @return Json
      * @throws DataNotFoundException

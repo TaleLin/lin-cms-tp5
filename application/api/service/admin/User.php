@@ -18,7 +18,7 @@ use app\api\model\admin\LinUserIdentity as LinUserIdentityModel;
 use app\api\service\token\LoginToken;
 use app\lib\enum\GroupLevelEnum;
 use app\lib\enum\IdentityTypeEnum;
-use app\lib\enum\MountType;
+use app\lib\enum\MountTypeEnum;
 use app\lib\exception\AuthFailedException;
 use app\lib\exception\NotFoundException;
 use app\lib\exception\OperationException;
@@ -129,14 +129,14 @@ class User
         $user['admin'] = $root ? true : false;
 
         if ($root) {
-            $permissions = LinPermissionModel::where('mount', MountType::MOUNT)
+            $permissions = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
                 ->select()
                 ->toArray();
             $user['permissions'] = formatPermissions($permissions);
         } else {
             $permissionIds = LinGroupPermissionModel::whereIn('group_id', $groupIds)
                 ->column('permission_id');
-            $permissions = LinPermissionModel::where('mount', MountType::MOUNT)
+            $permissions = LinPermissionModel::where('mount', MountTypeEnum::MOUNT)
                 ->select($permissionIds)->toArray();
 
             $user['permissions'] = formatPermissions($permissions);

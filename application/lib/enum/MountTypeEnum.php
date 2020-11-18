@@ -9,7 +9,7 @@
 namespace app\lib\enum;
 
 
-class MountType
+class MountTypeEnum
 {
     const MOUNT = 1; // 挂载
     const UNMOUNT = 0;
