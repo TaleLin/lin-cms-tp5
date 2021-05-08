@@ -232,7 +232,7 @@ class Admin
             $group->permissions()->saveAll($permissionIds);
             Db::commit();
             return $group->getAttr('id');
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             Db::rollback();
             throw new OperationException(['msg' => "新增分组失败:{$ex->getMessage()}"]);
         }
@@ -275,11 +275,11 @@ class Admin
             throw new NotFoundException();
         }
 
-        if ($group->getAtt('level') === GroupLevelEnum::ROOT) {
+        if ($group->getAttr('level') === GroupLevelEnum::ROOT) {
             throw new ForbiddenException(['msg' => '不允许删除root分组']);
         }
 
-        if ($group->getAtt('level') === GroupLevelEnum::GUEST) {
+        if ($group->getAttr('level') === GroupLevelEnum::GUEST) {
             throw new ForbiddenException(['msg' => '不允许删除guest分组']);
         }
 
